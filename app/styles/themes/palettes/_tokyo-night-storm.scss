@@ -1,0 +1,251 @@
+/*
+ * Tokyo Night Storm palette for Desktop Plus.
+ *
+ * Overrides the variables from themes/_dark.scss, so it only takes effect
+ * when the app is set to the Dark theme (Settings > Appearance).
+ *
+ * Keep this file plain CSS (no Sass variables or functions): the same file is
+ * compiled into the app at build time AND injected into an installed app's
+ * renderer.css by script/desktop-theme.sh.
+ *
+ * Colors from https://github.com/folke/tokyonight.nvim (storm variant).
+ *   bg #24283b  bg_dark #1f2335  bg_highlight #292e42  border #1d202f
+ *   fg #c0caf5  fg_dark #a9b1d6  comment #565f89  dark5 #737aa2
+ *   blue0 #3d59a1  blue #7aa2f7  cyan #7dcfff  magenta #bb9af7
+ *   orange #ff9e64  yellow #e0af68  green #9ece6a  teal #73daca  red #f7768e
+ */
+
+body.theme-dark {
+  --color-new: #9ece6a;
+  --color-deleted: #f7768e;
+  --color-modified: #e0af68;
+  --color-renamed: #7aa2f7;
+  --color-conflicted: #ff9e64;
+
+  --text-color: #c0caf5;
+  --text-secondary-color: #a9b1d6;
+  --text-secondary-color-muted: #737aa2;
+  --background-color: #24283b;
+
+  --button-background: #3d59a1;
+  --button-hover-background: #4a68b5;
+  --button-text-color: #ffffff;
+  --button-focus-border-color: #7aa2f7;
+
+  --link-button-color: #7aa2f7;
+  --link-button-hover-color: #89b4fa;
+  --link-button-selected-hover-color: #7aa2f7;
+
+  --secondary-button-background: #292e42;
+  --secondary-button-hover-border-color: #737aa2;
+  --secondary-button-focus-shadow-color: rgba(122, 162, 247, 0.5);
+  --secondary-button-focus-border-color: #7aa2f7;
+
+  --button-destructive-background: rgba(219, 75, 75, 0.25);
+  --button-destructive-border-color: #914c54;
+  --button-destructive-hover-background: #b54a52;
+  --button-destructive-hover-border-color: #914c54;
+  --button-destructive-focus-background: #914c54;
+  --button-destructive-focus-border-color: #914c54;
+
+  --badge-icon-color: #a9b1d6;
+
+  --input-icon-warning-color: #e0af68;
+  --input-icon-error-color: #f7768e;
+  --input-icon-hover-background-color: #292e42;
+
+  --scroll-bar-thumb-background-color: rgba(192, 202, 245, 0.18);
+  --scroll-bar-thumb-background-color-active: rgba(192, 202, 245, 0.4);
+
+  /* Boxes (lists, panels) */
+  --box-background-color: #1f2335;
+  --box-alt-background-color: #292e42;
+  --box-skeleton-background-color: #3b4261;
+  --skeleton-background-gradient: -webkit-linear-gradient(left, rgba(36, 40, 59, 0) 0%, rgba(36, 40, 59, 0.5) 50%, rgba(36, 40, 59, 0) 100%);
+  --box-border-color: #1d202f;
+  --box-border-contrast-color: #545c7e;
+  --box-border-accent-color: #7aa2f7;
+  --box-selected-background-color: #2f3549;
+  --box-hover-background-color: #292e42;
+  --box-selected-border-color: #545c7e;
+  --box-selected-active-background-color: #3d59a1;
+  --box-selected-active-text-color: #ffffff;
+  --box-selected-active-border-color: #7aa2f7;
+  --box-overflow-shadow-background: linear-gradient(180deg, rgba(36, 40, 59, 0) 0%, rgba(36, 40, 59, 1) 90%, rgba(36, 40, 59, 1) 100%);
+  --no-shadow-top: linear-gradient(#24283b, rgba(255, 255, 255, 0));
+  --no-shadow-bottom: linear-gradient(rgba(255, 255, 255, 0), #24283b);
+  --top-shadow: linear-gradient(0deg, rgba(36, 40, 59, 0) 0%, rgba(0, 0, 0, 0.45) 90%, rgba(0, 0, 0, 0.7) 100%);
+  --bottom-shadow: linear-gradient(180deg, rgba(36, 40, 59, 0) 0%, rgba(0, 0, 0, 0.45) 90%, rgba(0, 0, 0, 0.7) 100%) 0 100%;
+  --box-placeholder-color: #737aa2;
+
+  --co-author-tag-background-color: #2e3c64;
+  --co-author-tag-border-color: #3d59a1;
+
+  --commit-warning-badge-background-color: #24283b;
+  --commit-warning-badge-border-color: #3b4261;
+
+  --shadow-color: rgba(0, 0, 0, 0.4);
+
+  /* Toolbar */
+  --toolbar-background-color: #1f2335;
+  --toolbar-button-hover-color: #ffffff;
+  --toolbar-button-hover-background-color: #292e42;
+  --toolbar-button-focus-background-color: #292e42;
+  --toolbar-button-progress-color: #292e42;
+  --toolbar-button-focus-progress-color: #3b4261;
+  --toolbar-button-hover-progress-color: #3b4261;
+  --toolbar-dropdown-open-progress-color: #a9b1d6;
+  --toolbar-dropdown-text-warning-color: #ff9e64;
+  --toolbar-dropdown-text-hover-color: #ffffff;
+  --toolbar-tooltip-background-color: #292e42;
+  --toolbar-tooltip-shadow-color: #16161e;
+
+  /* App menu (Linux) */
+  --app-menu-button-active-background-color: #292e42;
+  --app-menu-pane-background-color: #1f2335;
+  --app-menu-divider-color: #3b4261;
+
+  --toolbar-badge-background-color: #3b4261;
+  --toolbar-badge-active-background-color: #3b4261;
+
+  --tab-bar-active-color: #7aa2f7;
+  --tab-bar-hover-background-color: #292e42;
+  --tab-bar-count-background-color: #3b4261;
+
+  --list-item-badge-background-color: #3b4261;
+  --branch-pill-background-color: #292e42;
+  --list-item-selected-badge-color: #ffffff;
+  --list-item-selected-badge-background-color: #545c7e;
+  --list-item-selected-active-badge-color: #24283b;
+  --list-item-selected-active-badge-background-color: #c0caf5;
+  --list-item-hover-background-color: #292e42;
+
+  --toast-notification-background-color: rgba(22, 22, 30, 0.85);
+
+  --focus-color: #7aa2f7;
+  --accent-color: #7dcfff;
+  --diff-linenumber-focus-color: #7dcfff;
+  --text-field-focus-shadow-color: rgba(122, 162, 247, 0.25);
+
+  --primary-suggested-action-background: #2e3c64;
+  --primary-suggested-action-border-color: #3d59a1;
+  --suggested-action-icon-color: #7aa2f7;
+
+  /* Diff view */
+  --diff-alt-text-color: #a9b1d6;
+  --diff-border-color: #292e42;
+  --diff-gutter-color: #292e42;
+  --diff-gutter-background-color: #1f2335;
+  --diff-line-number-color: #737aa2;
+
+  --diff-selected-background-color: #2e3c64;
+  --diff-selected-border-color: #3d59a1;
+  --diff-selected-gutter-color: #3d59a1;
+
+  --diff-add-background-color: #283b4d;
+  --diff-add-border-color: #2c4552;
+  --diff-add-gutter-color: #2c4552;
+  --diff-add-gutter-background-color: #233543;
+  --diff-add-inner-background-color: #3c6b5e;
+
+  --diff-delete-background-color: #3f2d3d;
+  --diff-delete-border-color: #4a2f3e;
+  --diff-delete-gutter-color: #4a2f3e;
+  --diff-delete-gutter-background-color: #372837;
+  --diff-delete-inner-background-color: #6e3a4a;
+  --diff-delete-text-color: #c0caf5;
+
+  --diff-hunk-background-color: #1f2335;
+  --diff-hunk-border-color: #292e42;
+  --diff-hunk-gutter-color: #292e42;
+  --diff-hunk-gutter-background-color: #1b1e2d;
+  --diff-hunk-text-color: #737aa2;
+
+  --diff-hover-background-color: #3d59a1;
+  --diff-hover-border-color: #7aa2f7;
+  --diff-hover-gutter-color: #7aa2f7;
+
+  --diff-add-hover-background-color: #2f5049;
+  --diff-add-hover-border-color: #449dab;
+  --diff-add-hover-gutter-color: #449dab;
+
+  --diff-delete-hover-background-color: #57324a;
+  --diff-delete-hover-border-color: #914c54;
+  --diff-delete-hover-gutter-color: #914c54;
+
+  --diff-empty-row-background-color: #222639;
+  --diff-empty-hunk-handle: #3b4261;
+
+  /* Syntax highlighting */
+  --syntax-variable-color: #c0caf5;
+  --syntax-alt-variable-color: #7dcfff;
+  --syntax-keyword-color: #bb9af7;
+  --syntax-atom-color: #ff9e64;
+  --syntax-string-color: #9ece6a;
+  --syntax-qualifier-color: #7aa2f7;
+  --syntax-type-color: #2ac3de;
+  --syntax-comment-color: #565f89;
+  --syntax-tag-color: #f7768e;
+  --syntax-attribute-color: #73daca;
+  --syntax-link-color: #7aa2f7;
+  --syntax-header-color: #7aa2f7;
+  --syntax-quote-color: #9ece6a;
+
+  /* Errors, dialogs, banners */
+  --error-color: #f7768e;
+  --form-error-background: #3f2d3d;
+  --form-error-border-color: #914c54;
+  --dialog-banner-success-background: rgba(65, 166, 181, 0.25);
+  --dialog-banner-success-border-color: #449dab;
+  --input-error-text-color: #f7768e;
+  --overlay-background-color: rgba(15, 16, 24, 0.55);
+  --dialog-warning-color: #e0af68;
+  --dialog-information-color: #7aa2f7;
+  --dialog-error-color: #f7768e;
+
+  --banner-warning-background: #33302b;
+  --banner-warning-link-color: #7aa2f7;
+  --banner-warning-icon-color: #e0af68;
+
+  --file-warning-background-color: rgba(224, 175, 104, 0.12);
+  --file-warning-color: #e0af68;
+  --file-warning-border-color: rgba(224, 175, 104, 0.3);
+
+  --tooltip-background-color: #292e42;
+  --tooltip-color: #c0caf5;
+  --tooltip-shadow-color: #16161e;
+
+  --path-segment-background: #3b4261;
+  --path-segment-background-focus: #414868;
+
+  --status-pending-color: #e0af68;
+  --status-error-color: #f7768e;
+  --status-success-color: #9ece6a;
+
+  --pr-open-icon-color: #9ece6a;
+  --pr-draft-icon-color: #737aa2;
+  --pr-timeline-line-color: #545c7e;
+  --pr-changes-requested-icon-background-color: #db4b4b;
+  --pr-approved-icon-background-color: #449dab;
+  --pr-commented-icon-color: #a9b1d6;
+  --pr-commented-icon-background-color: #3b4261;
+
+  --unpushed-branch-color: #e0af68;
+
+  --call-to-action-bubble-background-color: #3d59a1;
+  --call-to-action-bubble-color: #ffffff;
+
+  --title-tool-tip-background-color: #292e42;
+
+  /* Markdown (PR / release notes) */
+  --md-border-default-color: #3b4261;
+  --md-border-muted-color: #292e42;
+  --md-canvas-default-color: #1f2335;
+  --md-canvas-subtle-color: #292e42;
+  --md-fg-default-color: #c0caf5;
+  --md-fg-muted-color: #737aa2;
+  --md-danger-fg-color: #f7768e;
+  --md-neutral-muted-color: rgba(84, 92, 126, 0.4);
+  --md-accent-emphasis-color: #3d59a1;
+  --md-accent-fg-color: #7aa2f7;
+}

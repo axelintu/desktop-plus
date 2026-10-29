@@ -1,0 +1,190 @@
+name: Themed Linux build
+
+# Builds the latest upstream Desktop Plus release with a custom dark palette
+# and publishes it as a release on this fork.
+#
+# - Runs daily; does nothing if the latest upstream release is already built.
+# - Run it by hand from the Actions tab to rebuild or pick another palette.
+# - The palette files come from this fork's default branch and are overlaid on
+#   the untouched upstream release tag, so upstream changes never cause merge
+#   conflicts here.
+
+on:
+  schedule:
+    - cron: '17 10 * * *' # daily, 04:17 Mexico City
+  workflow_dispatch:
+    inputs:
+      palette:
+        description: 'Palette name (see app/styles/themes/palettes), or "stock"'
+        required: false
+        default: ''
+      tag:
+        description: 'Upstream tag to build (default: latest release)'
+        required: false
+        default: ''
+      force:
+        description: 'Rebuild even if a release for this tag already exists'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: themed-build
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: desktop-plus/desktop-plus
+  # Override the scheduled palette with a repository variable named THEME_PALETTE.
+  PALETTE: ${{ inputs.palette || vars.THEME_PALETTE || 'tokyo-night-storm' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.pick.outputs.tag }}
+      build: ${{ steps.pick.outputs.build }}
+    steps:
+      - name: Find upstream release and see if it's already built
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          tag="$INPUT_TAG"
+          if [ -z "$tag" ]; then
+            tag=$(gh release view --repo "$UPSTREAM_REPO" --json tagName -q .tagName)
+          fi
+          echo "Upstream tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          if [ "$FORCE" != "true" ] && gh release view "$tag-$PALETTE" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $tag-$PALETTE already exists; nothing to do."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
+      RELEASE_CHANNEL: production
+    steps:
+      - name: Check out this fork (for the theme files)
+        uses: actions/checkout@v4
+        with:
+          path: fork
+
+      - name: Check out upstream release
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM_REPO }}
+          ref: ${{ env.TAG }}
+          path: app-src
+          submodules: recursive
+
+      - name: Overlay theme files
+        working-directory: app-src
+        run: |
+          mkdir -p app/styles/themes/palettes
+          cp ../fork/app/styles/themes/palettes/_*.scss app/styles/themes/palettes/
+          cp ../fork/script/desktop-theme.sh script/desktop-theme.sh
+          chmod +x script/desktop-theme.sh
+
+          # Import the palette right after the stock dark theme (idempotent).
+          if ! grep -q "themes/palette'" app/styles/desktop.scss; then
+            grep -q "^@import 'themes/dark';" app/styles/desktop.scss || {
+              echo "::error::Upstream changed app/styles/desktop.scss; update the overlay step."
+              exit 1
+            }
+            sed -i "s#^@import 'themes/dark';#@import 'themes/dark';\n@import 'themes/palette';#" app/styles/desktop.scss
+          fi
+
+          script/desktop-theme.sh source "$PALETTE"
+          git --no-pager diff --stat
+
+      - name: Compute version
+        working-directory: app-src
+        run: |
+          VERSION="${TAG#v}"
+          IFS='.' read -ra parts <<< "$VERSION"
+          if [ "${#parts[@]}" -gt 3 ]; then
+            rest=$(IFS='-'; echo "${parts[*]:3}")
+            SEMVER="${parts[0]}.${parts[1]}.${parts[2]}-r${rest}"
+          else
+            SEMVER="$VERSION"
+          fi
+          echo "APP_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "SEMVER_COMPATIBLE_VERSION=$SEMVER" >> "$GITHUB_ENV"
+          echo "NODE_VERSION=$(cat .node-version)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        working-directory: app-src
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+        env:
+          npm_config_arch: x64
+          TARGET_ARCH: x64
+
+      - name: Build
+        working-directory: app-src
+        run: yarn build:prod
+        env:
+          npm_config_arch: x64
+          TARGET_ARCH: x64
+
+      - name: Package
+        working-directory: app-src
+        run: yarn package
+        env:
+          npm_config_arch: x64
+          TARGET_ARCH: x64
+
+      - name: Bundle the theme switcher
+        working-directory: app-src
+        run: |
+          mkdir -p dist/desktop-theme/palettes
+          cp script/desktop-theme.sh dist/desktop-theme/
+          cp app/styles/themes/palettes/_*.scss dist/desktop-theme/palettes/
+          tar -C dist -czf dist/desktop-theme.tar.gz desktop-theme
+
+      - name: Publish release
+        working-directory: app-src
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          rel="$TAG-$PALETTE"
+          shopt -s nullglob
+          # Skip the transitional "github-desktop-plus" dummy package.
+          files=()
+          for f in dist/*.deb dist/*.AppImage dist/desktop-theme.tar.gz; do
+            case "$f" in *github-desktop-plus*) continue ;; esac
+            files+=("$f")
+          done
+          printf 'Uploading:\n'; printf '  %s\n' "${files[@]}"
+
+          notes="Desktop Plus [$TAG](https://github.com/$UPSTREAM_REPO/releases/tag/$TAG) with the **$PALETTE** dark palette.
+
+          Set Settings > Appearance > Theme to **Dark** to see it.
+          \`desktop-theme.tar.gz\` contains the switcher script to change palettes on an installed copy."
+
+          gh release delete "$rel" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$rel" "${files[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "${{ github.sha }}" \
+            --title "Desktop Plus $TAG ($PALETTE)" \
+            --notes "$notes"
